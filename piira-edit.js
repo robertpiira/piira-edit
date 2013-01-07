@@ -204,6 +204,7 @@
         width: 320px;\
         padding: 40px 20px;\
         height: 100%;\
+        z-index: 1000;\
         cursor: text !important;\
         background: rgba(0, 0, 0, .75);\
         color: rgba(255, 255, 255, .8);\
@@ -215,14 +216,14 @@
         outline: none;\
         }\
         html {\
-        padding-right: 320px;\
+        padding-right: 320px !important;\
         }\
         .' + piiraEdit.prefix + '-inspector-button {\
         position: fixed;\
         top: 0;\
         right: 0;\
         width: 320px;\
-        z-index: 1;\
+        z-index: 1001;\
         margin: 0;\
         cursor: pointer !important;\
         background: rgb(170, 170, 160);\
