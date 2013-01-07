@@ -1,4 +1,5 @@
-piira-edit
-==========
+piiraEdit 0.1
+=============
 
-in-browser css insect/edit.
+piiraEdit, the in-browser css inspect/edit bookmarklet.
+
