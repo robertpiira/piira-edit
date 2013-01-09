@@ -75,7 +75,7 @@
         selectors.push(element.getAttribute('id'));
         prefix = '#';
       } else {
-        console.log('No selector found');
+        piiraEdit.styler.styleBox.value += '\n\n' + '/* selector not found */';
       }
 
       if (selectors.length > 0) {
@@ -90,22 +90,48 @@
       
     },
 
+    isNotExternalSheet: function (url) {
+
+      var stripDown = function (href) {
+        return href.replace("http://").replace("https://").split("/")[0];
+      };
+
+      return (stripDown(location.href) === stripDown(url));
+    },
+
     collectRules: function () {
 
       var sheets = doc.styleSheets;
-      var rule = null;
-      var rules = null;
+      var sheet;
+      var rules;
+      var rule;
+      var mediaRule;
       var sheetsLength = sheets.length;
       var i;
       var key;
 
       for (i = 0; i < sheetsLength; i++) {
-        rules = sheets[i].cssRules;
 
-        for (key in rules) {
-          rule = rules[key];
-          if (rule && rule.cssText) {
-            this.allRules.push(rule);
+        sheet = sheets[i];
+
+        if (sheet.href && this.isNotExternalSheet(sheet.href)) {
+          rules = sheet.cssRules;
+
+          for (key in rules) {
+            rule = rules[key];
+
+            if (rule && rule.cssText) {
+              this.allRules.push(rule);
+
+              // Also check for rules in mediaLists
+              if (rule.cssRules) {
+                for (mediaRule in rule.cssRules) {
+                  if (rule.cssRules[mediaRule].cssText) {
+                    this.allRules.push(rule.cssRules[mediaRule]);
+                  }
+                }
+              }
+            }
           }
         }
 
@@ -117,11 +143,19 @@
 
       var found = false;
       var i;
+      var cssText;
 
       for (i = 0; i < this.allRules.length; i++) {
         
-        if (this.allRules[i].selectorText === prefix + selector) {
-          piiraEdit.styler.styleBox.value += '\n\n' + this.processRule(this.allRules[i].cssText);
+        if (this.allRules[i].selectorText && this.allRules[i].selectorText.indexOf(prefix + selector) !== -1) {
+          
+          cssText = this.allRules[i].cssText;
+
+          if (this.allRules[i].parentRule) {
+            cssText = '@media ' + this.allRules[i].parentRule.media.mediaText + ' {\n' + this.allRules[i].cssText + '\n\n}';
+          }
+
+          piiraEdit.styler.styleBox.value += '\n\n' + this.processRule(cssText);
           found = true;
         }
         
@@ -135,7 +169,12 @@
 
     processRule: function (style) {
 
-      var processedStyle = style.split('{').join('{\n ').split(';').join(';\n ').replace('  }', '}');
+      var processedStyle = style
+                            .split('{')
+                            .join('{\n ')
+                            .split(';')
+                            .join(';\n ')
+                            .replace('  }', '}');
 
       return processedStyle;
 
@@ -204,11 +243,13 @@
         width: 320px;\
         padding: 40px 20px;\
         height: 100%;\
-        z-index: 1000;\
+        z-index: 10000;\
         cursor: text !important;\
         background: rgba(0, 0, 0, .75);\
         color: rgba(255, 255, 255, .8);\
         -webkit-box-sizing: border-box;\
+        -moz-box-sizing: border-box;\
+        box-sizing: border-box;\
         -webkit-font-smoothing: antialiased;\
         font-size: 13px;\
         font-family: verdana;\
@@ -223,8 +264,10 @@
         top: 0;\
         right: 0;\
         width: 320px;\
-        z-index: 1001;\
+        z-index: 10001;\
         margin: 0;\
+        padding: .3em 0;\
+        font-size: 15px;\
         cursor: pointer !important;\
         background: rgb(170, 170, 160);\
         border: none;\
