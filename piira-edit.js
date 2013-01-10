@@ -18,9 +18,11 @@
 
       this.allRules = [];
       this.states = { inspectorActive: false };
+      this.settings = { styleBoxWidth: 320, barWidth: 8};
 
       this.collectRules();
       this.createInspectorButton();
+      this.createDragbar();
       this.addHandlers();
 
     },
@@ -33,9 +35,34 @@
 
     },
 
+    createDragbar: function () {
+
+      this.dragbar = document.body.appendChild(doc.createElement('div'));
+      this.dragbar.setAttribute('class', piiraEdit.prefix + '-dragbar');
+
+    },
+
     addHandlers: function () {
 
       var self = this;
+      var evt = document.createEvent('Event');
+
+      var piiraEditDrag = function () {
+        self.states.dragbarMoving = true;
+      };
+
+      var piiraEditStopdrag = function () {
+        self.states.dragbarMoving = false;
+      };
+
+      var piiraEditMove = function (e) {
+        e.preventDefault();
+        if (self.states.dragbarMoving) {
+          self.dragDistance = window.innerWidth - e.pageX + 'px';
+          self.bodySpace = e.pageX - self.settings.barWidth + 'px';
+          doc.dispatchEvent(evt);
+        }
+      };
 
       this.inspectorButton.addEventListener('click', function () {
 
@@ -58,6 +85,19 @@
         }
 
       });
+
+      this.dragbar.addEventListener('mousedown', piiraEditDrag, false);
+      window.addEventListener('mouseup', piiraEditStopdrag, false);
+      window.addEventListener('mousemove', piiraEditMove, false);
+  
+      evt.initEvent('listenToDrag', true, true);
+
+      doc.addEventListener('listenToDrag', function () {
+        self.inspectorButton.style.width = self.dragDistance;
+        piiraEdit.styler.styleBox.style.width = self.dragDistance;
+        doc.documentElement.style.width = self.bodySpace;
+        self.dragbar.style.right = self.dragDistance;
+      }, false);
 
     },
 
@@ -202,7 +242,7 @@
 
     getSavedStyles: function () {
 
-      var storedStyles = localStorage.getItem('saved-styles');
+      var storedStyles = localStorage.getItem('piira-edit-saved-styles');
       if (storedStyles) {
         this.styleBox.value = storedStyles;
         this.pickStyles(storedStyles);
@@ -229,7 +269,7 @@
 
     saveStyles: function (code) {
 
-      localStorage.setItem('saved-styles', code + '');
+      localStorage.setItem('piira-edit-saved-styles', code + '');
 
     },
 
@@ -240,7 +280,7 @@
         bottom: 0;\
         right: 0;\
         top: 0;\
-        width: 320px;\
+        width: ' + piiraEdit.cssInspector.settings.styleBoxWidth + 'px;\
         padding: 40px 20px;\
         height: 100%;\
         z-index: 10000;\
@@ -256,14 +296,11 @@
         border: none;\
         outline: none;\
         }\
-        html {\
-        padding-right: 320px !important;\
-        }\
         .' + piiraEdit.prefix + '-inspector-button {\
         position: fixed;\
         top: 0;\
         right: 0;\
-        width: 320px;\
+        width: ' + piiraEdit.cssInspector.settings.styleBoxWidth + 'px;\
         z-index: 10001;\
         margin: 0;\
         padding: .3em 0;\
@@ -289,6 +326,19 @@
         }\
         @keyframes active {\
         to {background: rgb(170, 170, 160);}\
+        }\
+        .' + piiraEdit.prefix + '-dragbar {\
+        background: rgba(0,0,0,.8);\
+        width: ' + piiraEdit.cssInspector.settings.barWidth + 'px;\
+        height: 100%;\
+        position: fixed;\
+        z-index: 10002;\
+        right: ' + piiraEdit.cssInspector.settings.styleBoxWidth + 'px;\
+        top: 0;\
+        cursor: ew-resize;\
+        }\
+        html, html {\
+        width: ' + (window.innerWidth - (piiraEdit.cssInspector.settings.styleBoxWidth + piiraEdit.cssInspector.settings.barWidth)) + 'px;\
         }\
         ';
 
