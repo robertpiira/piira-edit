@@ -24,6 +24,7 @@
       this.includeCss();
       this.collectRules();
       this.createInspectorButton();
+      this.createMenu();
       this.createDragbar();
       this.addHandlers();
 
@@ -41,9 +42,18 @@
 
     createInspectorButton: function () {
 
-      this.inspectorButton = doc.body.appendChild(doc.createElement('button'));
+      this.inspectorButton = doc.createElement('button');
       this.inspectorButton.setAttribute('class', piiraEdit.prefix + '-inspector-button');
       this.inspectorButton.innerHTML = 'Inspect';
+
+    },
+
+    createMenu: function () {
+
+      this.menu = doc.body.appendChild(doc.createElement('div'));
+      this.menu.setAttribute('class', piiraEdit.prefix + '-menu');
+
+      this.menu.appendChild(this.inspectorButton);
 
     },
 
@@ -105,7 +115,7 @@
       evt.initEvent('listenToDrag', true, true);
 
       doc.addEventListener('listenToDrag', function () {
-        self.inspectorButton.style.width = self.dragDistance;
+        self.menu.style.width = self.dragDistance;
         piiraEdit.styler.styleBox.style.width = self.dragDistance;
         doc.documentElement.style.width = self.bodySpace;
         self.dragbar.style.right = self.dragDistance;
@@ -239,8 +249,8 @@
     init: function () {
 
       this.styleBox = doc.body.appendChild(doc.createElement('textarea'));
-      this.styleParent = doc.head.appendChild(doc.createElement('style'));
-      this.guiParent = doc.head.appendChild(doc.createElement('style'));
+      this.styleParent = doc.body.appendChild(doc.createElement('style'));
+      this.guiParent = doc.body.appendChild(doc.createElement('style'));
 
       this.styleBox.setAttribute('id', piiraEdit.prefix + '-style-box');
       this.styleBox.setAttribute('class', piiraEdit.prefix + '-style-box');
@@ -290,7 +300,7 @@
       var styleBoxLooks = '.' + piiraEdit.prefix + '-style-box {\
         width: ' + piiraEdit.cssInspector.settings.styleBoxWidth + 'px;\
         }\
-        .' + piiraEdit.prefix + '-inspector-button {\
+        .' + piiraEdit.prefix + '-menu {\
         width: ' + piiraEdit.cssInspector.settings.styleBoxWidth + 'px;\
         }\
         .' + piiraEdit.prefix + '-dragbar {\
