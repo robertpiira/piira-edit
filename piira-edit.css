@@ -1,0 +1,66 @@
+.piira-edit-style-box {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  top: 0;
+  padding: 40px 20px;
+  height: 100%;
+  z-index: 10000;
+  cursor: text !important;
+  background: rgba(0, 0, 0, .75);
+  color: rgba(255, 255, 255, .8);
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  font-size: 13px;
+  font-family: verdana;
+  border: none;
+  outline: none;
+}
+
+.piira-edit-menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 10001;
+}
+
+.piira-edit-inspector-button {
+  margin: 0;
+  padding: .3em 0;
+  font-size: 15px;
+  cursor: pointer !important;
+  background: rgb(170, 170, 160);
+  border: none;
+  width: 50%;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.piira-edit-inspector-button-active {
+  background: rgb(210, 210, 200) !important;
+  -webkit-animation: active 1s infinite alternate;
+  -moz-animation: active 1s infinite alternate;
+  animation: active 1s infinite alternate;
+}
+
+@-webkit-keyframes active {
+  to {background: rgb(170, 170, 160);}
+}
+@-moz-keyframes active {
+  to {background: rgb(170, 170, 160);}
+}
+@keyframes active {
+  to {background: rgb(170, 170, 160);}
+}
+
+.piira-edit-dragbar {
+  background: rgba(0,0,0,.8);
+  height: 100%;
+  position: fixed;
+  z-index: 10002;
+  top: 0;
+  cursor: ew-resize;
+}

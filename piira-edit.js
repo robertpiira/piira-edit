@@ -4,7 +4,7 @@
 // version:    0.1
 // author:     @robertpiira
 
-(function (doc) {
+(function (doc, win) {
 
   'use strict';
 
@@ -18,12 +18,24 @@
 
       this.allRules = [];
       this.states = { inspectorActive: false };
-      this.settings = { styleBoxWidth: 320, barWidth: 8};
+      this.settings = { styleBoxWidth: 320, barWidth: 8 };
+      this.urls = { css: 'http://piira.se/piira-edit-js/piira-edit.css' };
 
+      this.includeCss();
       this.collectRules();
       this.createInspectorButton();
       this.createDragbar();
       this.addHandlers();
+
+    },
+
+    includeCss: function () {
+
+      var ref = doc.createElement('link');
+
+      ref.href = this.urls.css;
+      ref.rel = 'stylesheet';
+      doc.body.appendChild(ref);
 
     },
 
@@ -37,7 +49,7 @@
 
     createDragbar: function () {
 
-      this.dragbar = document.body.appendChild(doc.createElement('div'));
+      this.dragbar = doc.body.appendChild(doc.createElement('div'));
       this.dragbar.setAttribute('class', piiraEdit.prefix + '-dragbar');
 
     },
@@ -45,7 +57,7 @@
     addHandlers: function () {
 
       var self = this;
-      var evt = document.createEvent('Event');
+      var evt = doc.createEvent('Event');
 
       var piiraEditDrag = function () {
         self.states.dragbarMoving = true;
@@ -58,7 +70,7 @@
       var piiraEditMove = function (e) {
         e.preventDefault();
         if (self.states.dragbarMoving) {
-          self.dragDistance = window.innerWidth - e.pageX + 'px';
+          self.dragDistance = win.innerWidth - e.pageX + 'px';
           self.bodySpace = e.pageX - self.settings.barWidth + 'px';
           doc.dispatchEvent(evt);
         }
@@ -87,8 +99,8 @@
       });
 
       this.dragbar.addEventListener('mousedown', piiraEditDrag, false);
-      window.addEventListener('mouseup', piiraEditStopdrag, false);
-      window.addEventListener('mousemove', piiraEditMove, false);
+      win.addEventListener('mouseup', piiraEditStopdrag, false);
+      win.addEventListener('mousemove', piiraEditMove, false);
   
       evt.initEvent('listenToDrag', true, true);
 
@@ -276,69 +288,17 @@
     stylerGui: function () {
 
       var styleBoxLooks = '.' + piiraEdit.prefix + '-style-box {\
-        position: fixed;\
-        bottom: 0;\
-        right: 0;\
-        top: 0;\
         width: ' + piiraEdit.cssInspector.settings.styleBoxWidth + 'px;\
-        padding: 40px 20px;\
-        height: 100%;\
-        z-index: 10000;\
-        cursor: text !important;\
-        background: rgba(0, 0, 0, .75);\
-        color: rgba(255, 255, 255, .8);\
-        -webkit-box-sizing: border-box;\
-        -moz-box-sizing: border-box;\
-        box-sizing: border-box;\
-        -webkit-font-smoothing: antialiased;\
-        font-size: 13px;\
-        font-family: verdana;\
-        border: none;\
-        outline: none;\
         }\
         .' + piiraEdit.prefix + '-inspector-button {\
-        position: fixed;\
-        top: 0;\
-        right: 0;\
         width: ' + piiraEdit.cssInspector.settings.styleBoxWidth + 'px;\
-        z-index: 10001;\
-        margin: 0;\
-        padding: .3em 0;\
-        font-size: 15px;\
-        cursor: pointer !important;\
-        background: rgb(170, 170, 160);\
-        border: none;\
-        -webkit-box-sizing: border-box;\
-        -moz-box-sizing: border-box;\
-        box-sizing: border-box;\
-        }\
-        .' + piiraEdit.prefix + '-inspector-button-active {\
-        background: rgb(210, 210, 200) !important;\
-        -webkit-animation: active 1s infinite alternate;\
-        -moz-animation: active 1s infinite alternate;\
-        animation: active 1s infinite alternate;\
-        }\
-        @-webkit-keyframes active {\
-        to {background: rgb(170, 170, 160);}\
-        }\
-        @-moz-keyframes active {\
-        to {background: rgb(170, 170, 160);}\
-        }\
-        @keyframes active {\
-        to {background: rgb(170, 170, 160);}\
         }\
         .' + piiraEdit.prefix + '-dragbar {\
-        background: rgba(0,0,0,.8);\
         width: ' + piiraEdit.cssInspector.settings.barWidth + 'px;\
-        height: 100%;\
-        position: fixed;\
-        z-index: 10002;\
         right: ' + piiraEdit.cssInspector.settings.styleBoxWidth + 'px;\
-        top: 0;\
-        cursor: ew-resize;\
         }\
-        html, html {\
-        width: ' + (window.innerWidth - (piiraEdit.cssInspector.settings.styleBoxWidth + piiraEdit.cssInspector.settings.barWidth)) + 'px;\
+        html {\
+        width: ' + (win.innerWidth - (piiraEdit.cssInspector.settings.styleBoxWidth + piiraEdit.cssInspector.settings.barWidth)) + 'px;\
         }\
         ';
 
@@ -432,4 +392,4 @@
   piiraEdit.styler.init();
   piiraEdit.styleInput.init();
 
-})(document);
+})(document, window);
